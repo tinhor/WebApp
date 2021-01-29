@@ -1,0 +1,72 @@
+﻿@model Administracija.Models.User
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Račun";
+}
+
+<!--  BEGIN CONTENT AREA  -->
+<div class="layout-px-spacing">
+
+    <div class="container">
+        <div class="row">
+
+            <div class="col-xl-12 col-lg-12 col-md-12 layout-spacing">
+                @if (ViewBag.SomeMessage != "")
+                {
+                    <!-- SYSTEM  // MSG -->
+                    @Html.Raw(ViewBag.Message)
+                    <!-- // -->
+                }
+
+
+                @using (Html.BeginForm("Account", "Dashboard", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post))
+                {
+                    <div class="info">
+                        <div class="row">
+                            <div class="col-lg-11 mx-auto">
+                                <div class="row">
+                                    <div class="col-xl-12 col-lg-12 col-md-12 mt-md-12 mt-2">
+                                        <div class="form">
+
+
+                                            <h5 class="d-inline-block mt-4 mb-4">Osnovne informacije</h5>
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="txtFirstName">Ime</label>
+                                                        @Html.EditorFor(model => model.First_name, new { htmlAttributes = new { @class = "form-control mb-4", @value = "@Model.First_name" } })
+                                                        @Html.ValidationMessageFor(model => model.First_name, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <div class="form-group">
+                                                        <label for="txtLastName">Prezime</label>
+                                                        @Html.EditorFor(model => model.Last_name, new { htmlAttributes = new { @class = "form-control mb-4", @value = "@Model.Last_name" } })
+                                                        @Html.ValidationMessageFor(model => model.Last_name, "", new { @class = "text-danger" })
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="txtEmail">E-pošta</label>
+                                                @Html.EditorFor(model => model.Email_address, new { htmlAttributes = new { @class = "form-control mb-4", @value = "@Model.Email_address" } })
+                                                @Html.ValidationMessageFor(model => model.Email_address, "", new { @class = "text-danger" })
+                                            </div>
+
+                                            <button type="submit" class="btn btn-primary p-2 mb-4 float-right"><i class="fas fa-save"></i> Spremi izmjene</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+
+            </div>
+
+
+        </div>
+    </div>
+
+</div>

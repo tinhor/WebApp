@@ -1,0 +1,43 @@
+﻿@{Korisnici.Models.Tracker.ListOfTrackers = Korisnici.Models.Tracker.GetAll(3);}
+    @{
+        Layout = "~/Views/Shared/_AdminLayout.cshtml";
+        ViewBag.Title = "Pratitelj rada ostalih";
+    }
+
+
+    <div class="table-responsive table-striped">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Ime prezime</th>
+                    <th>Datum</th>
+                    <th>Ukupna satnica</th>
+                    <th>#</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                
+                
+                @if (Korisnici.Models.Tracker.ListOfTrackers.Count > 0)
+                {
+                    foreach (var tracker in Korisnici.Models.Tracker.ListOfTrackers)
+                    {
+
+
+                <tr>
+                    <td>@tracker.Person.ToString()</td>
+                    <td>@tracker.Date.ToString("dd.MM.yyyy")</td>
+                    <td>@tracker.Worktime</td>
+                    <td><a href="TrackerDetails?date=@tracker.Date.ToString("yyyy-MM-dd")&user=@tracker.Person.IDWorker" class="btn btn-sm btn-default">Detalji</a></td>
+                </tr>
+
+                } } else {
+
+                <tr><td class="text-center" colspan="6">@Resources.ApiResponse.noData</td></tr>
+
+                }  
+
+            </tbody>
+        </table>
+    </div>

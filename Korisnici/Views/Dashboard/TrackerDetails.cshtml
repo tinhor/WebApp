@@ -1,0 +1,46 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Pratitelj rada";
+}
+
+<div class="container">
+    <span id="tblWork"></span>
+</div>
+
+<script type="text/javascript">
+    const delim = '-';
+
+    $(document).ready(function () {
+
+        let today = new Date('@Request.Params["date"]');
+        let dd = String(today.getDate()).padStart(2, '0');
+        let mm = String(today.getMonth() + 1).padStart(2, '0');
+        let yyyy = today.getFullYear();
+        today = yyyy + delim + mm + delim + dd;
+
+        getData(today);
+    });
+
+    function getData(today) {
+
+            $.ajax({
+                type: 'POST',
+                url: '/Dashboard/GetAdminTrackerTable',
+                dataType: 'text',
+                data: {
+                    permission: @Administracija.Models.ActiveSession.Current.ActiveUser.IDWorker,
+                    date: today
+                },
+                success: (function (result) {
+                    $('#tblWork').html(result);
+                    $("#txtDate").val(today);
+                }),
+                error: (function (xhr, status) {
+                    alert(status);
+                })
+            })
+    }
+
+
+</script>
+

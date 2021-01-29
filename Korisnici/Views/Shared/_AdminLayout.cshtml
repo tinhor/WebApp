@@ -1,0 +1,60 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - RWA Projekt</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</head>
+<body>
+
+    <div class="wrapper">
+
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3>@Administracija.Models.ActiveSession.Current.ActiveUser.ToString() </h3>
+                <h4>@Administracija.Models.UserRoles.State[Administracija.Models.ActiveSession.Current.ActiveUser.UserLevel]</h4>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li>
+                    <a href="~/Dashboard">Naslovna</a>
+                </li>
+                <li>
+                    <a href="~/Dashboard/Tracker">Djelatnici</a>
+                </li>
+                <li>
+                    <a href="~/Dashboard/Account">Profil</a>
+                </li>
+                <li>
+                    <a href="~/Dashboard/Logout">Odjava</a>
+                </li>
+            </ul>
+
+        </nav>
+
+        <!-- CONTENT -->
+
+        <div id="content">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+
+                    <button type="button" id="sidebarCollapse" class="navbar-btn">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+
+                </div>
+            </nav>
+            @RenderBody()
+        </div>
+    </div>
+
+       
+</body>
+</html>

@@ -1,0 +1,289 @@
+﻿@model Korisnici.Models.HourViewModel
+
+    <body>
+        <div class="row">
+            <div class="col-sm-3">
+          
+            </div>
+            <div class="col-sm-9">
+                <button id="dorada" style="float: right!important;" class="btn btn-danger">Vrati na doradu</button>
+                <button id="spremi" style="float: right!important; margin-right: 10px;" class="btn btn-success mr-2">Spremi</button>
+            </div>
+        </div>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Projekt</th>
+                    <th>Zabilježeno</th>
+                    <th>Start</th>
+                    <th>Stop</th>
+                    <th>Radni sati</th>
+                    @if (Model.Permission <= 3)
+                    {
+                        <th>Prekovremeni sati</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var project in Model.WorkData)
+                {
+                <tr>
+                    <td class="text-primary">@project.Project.Title</td>
+
+                    <td>
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control" value="@( project.Status == 2  ? "Timer je uključen" : project.WorkTimeAutomatic.ToString())" aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
+                        </div>
+                    </td>
+
+                    <td class="">
+                        @if (project.Status == 1)
+                        {
+                            <button data-edit="@project.Project.IDProject" id="workerStart" class="btn btn-sm btn-success mb-2">Pokreni</button>
+                        }
+                        else
+                        {
+
+                        }
+                    </td>
+
+                    <td class="">
+                        @if (project.Status == 2)
+                        {
+                            <button data-edit="@project.Project.IDProject" id="workerStop" class="btn btn-sm btn-danger mb-2">Zaustavi</button>
+                        }
+                        else
+                        {
+
+                        }
+                    </td>
+
+                    <td>
+                        <div class="input-group input-group-sm">
+                            <input data-edit="@project.Project.IDProject" type="time" class="form-control radniSati" value="@project.Worktime.ToString(@"hh\:mm\:ss")" aria-label="Small" aria-describedby="inputGroup-sizing-sm" @(project.Status == 1 ? string.Empty : "disabled")>
+                        </div>
+                    </td>
+                    @if (Model.Permission < 3)
+                    {
+                        <td>
+                            <div class="input-group input-group-sm">
+                                <input data-edit="@project.Project.IDProject" type="time" class="form-control prekoVremeniSati" value="@project.Overtime.ToString(@"hh\:mm\:ss")" aria-label="Small" aria-describedby="inputGroup-sizing-sm" @(project.Status == 1 ? string.Empty : "disabled")>
+                            </div>
+                        </td>
+                    }
+                </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Ukupno</th>
+                    <th><span class="badge outline-badge-primary lock shadow-none"><span id="">@Model.CalculatedTime.ToString(@"hh\:mm\:ss")</span></span></th>
+                    <th></th>
+                    <th></th>
+                    <th><span class="badge outline-badge-secondary shadow-none"><span id="spanWorkTime">@Model.CalculatedWorktime.ToString(@"hh\:mm\:ss")</span></span></th>
+                    @if (Model.Permission < 3)
+                    {
+                        <th><span class="badge outline-badge-info shadow-none"><span id="spanOverTime">@Model.CalculatedOvertime.ToString(@"hh\:mm\:ss")</span></span></th>
+                    }
+                </tr>
+                <tr>
+                    <td colspan="6">
+                        <label><span style="color: #3b3f5c; font-weight: 800;">Komentar</span> <small>(nije obavezno polje)</small></label>
+                        <textarea style="resize: none;" class="form-control" rows="3"></textarea>
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+        <script>
+            /*----------------------------------------------------------------------------*/
+            /* FRONTEND - CALLBACK                                                        */
+            /*----------------------------------------------------------------------------*/
+
+
+
+            $(function () {
+                var dtToday = new Date();
+
+                var month = dtToday.getMonth() + 1;
+                var day = dtToday.getDate();
+                var year = dtToday.getFullYear();
+
+                if (month < 10)
+                    month = '0' + month.toString();
+                if (day < 10)
+                    day = '0' + day.toString();
+
+                var maxDate = year + '-' + month + '-' + day;
+                $('#txtDate').attr('max', maxDate);
+                $('#txtDate').val(maxDate);
+            });
+
+
+            $(document).ready(function () {
+                setTimeout(function () {
+                    getRadniSati();
+                    getPrekoVremeniSati();
+                    console.log("Izvršeno");
+                }, 3000);
+            });
+
+            $(document).on("change", ".radniSati", function () {
+                getRadniSati();
+            });
+
+            function getRadniSati() {
+                let tempSum = '00:00';
+                $(".radniSati").each(function () {
+                    tempSum = addTimes(tempSum, $(this).val());
+                });
+
+                radniSati = tempSum;
+                $("#spanWorkTime").html(radniSati);
+            }
+
+            /*--------*/
+
+            $(document).on("change", ".prekoVremeniSati", function () {
+                getPrekoVremeniSati();
+            });
+
+            function getPrekoVremeniSati() {
+                let tempSum = '00:00';
+                $(".prekoVremeniSati").each(function () {
+                    tempSum = addTimes(tempSum, $(this).val());
+                });
+
+                prekoVremeniSati = tempSum;
+                $("#spanOverTime").html(prekoVremeniSati);
+            }
+
+            /*----------------------------------------------------------------------------*/
+
+            var radniSati = '00:00';
+            var prekoVremeniSati = '00:00';
+
+            /*----------------------------------------------------------------------------*/
+            /* FRONTEND - FUNCTIONS                                                       */
+            /*----------------------------------------------------------------------------*/
+
+            function addTimes(startTime, endTime) {
+                var times = [0, 0, 0]
+                var max = times.length
+
+                var a = (startTime || '').split(':')
+                var b = (endTime || '').split(':')
+
+                // normalize time values
+                for (var i = 0; i < max; i++) {
+                    a[i] = isNaN(parseInt(a[i])) ? 0 : parseInt(a[i])
+                    b[i] = isNaN(parseInt(b[i])) ? 0 : parseInt(b[i])
+                }
+
+                // store time values
+                for (var i = 0; i < max; i++) {
+                    times[i] = a[i] + b[i]
+                }
+
+                var hours = times[0]
+                var minutes = times[1]
+                var seconds = times[2]
+
+                if (seconds >= 60) {
+                    var m = (seconds / 60) << 0
+                    minutes += m
+                    seconds -= 60 * m
+                }
+
+                if (minutes >= 60) {
+                    var h = (minutes / 60) << 0
+                    hours += h
+                    minutes -= 60 * h
+                }
+
+                return ('0' + hours).slice(-2) + ':' + ('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2)
+            }
+
+            /*----------------------------------------------------------------------------*/
+
+            /* ---------- // ---------- */
+
+
+            $(document).on("click", "#dorada", function () {
+                prepareDataDorada();
+            })
+
+            function prepareDataDorada() {
+
+                if (parseInt(radniSati) < 9 && parseInt(prekoVremeniSati) < 5) {
+                    $(".radniSati").each(function () {
+                        $.ajax({
+                            type: 'POST',
+                            async: false,
+                            url: '/Dashboard/ChangeWorker',
+                            dataType: 'text',
+                            data: {
+                                project: $(this).data("edit"),
+                                worktime: $(this).val(),
+                                overtime: $("input[data-edit='" + $(this).data("edit") + "'].prekoVremeniSati").val()
+                            },
+                            success: (function (result) {
+
+                            }),
+                            error: (function (xhr, ajaxOptions, thrownError) {
+                                console.log("XHR: " + xhr);
+                                console.log("Options: " + ajaxOptions);
+                                console.log("ERROR: " + thrownError);
+                            })
+                        });
+                    });
+                    window.location.replace(window.location.origin +"/Dashboard/Tracker");
+                } else {
+                    alert("Osoba ne smije raditi više od 8 radnih sati te 4 prekovremna sata");
+                }
+            }
+
+            /*----------------------------------------------------------------------------*/
+
+            /*----------------------------------------------------------------------------*/
+
+            /* ---------- // ---------- */
+
+            $(document).on("click", "#spremi", function () {
+                prepareDataSpremi();
+            })
+
+            function prepareDataSpremi() {
+
+                if (parseInt(radniSati) < 9 && parseInt(prekoVremeniSati) < 5) {
+                    $(".radniSati").each(function () {
+                        $.ajax({
+                            type: 'POST',
+                            async: false,
+                            url: '/Dashboard/FinishWorker',
+                            dataType: 'text',
+                            data: {
+                                project: $(this).data("edit"),
+                                worktime: $(this).val(),
+                                overtime: $("input[data-edit='" + $(this).data("edit") + "'].prekoVremeniSati").val()
+                            },
+                            success: (function (result) {
+
+                            }),
+                            error: (function (xhr, ajaxOptions, thrownError) {
+                                console.log("XHR: " + xhr);
+                                console.log("Options: " + ajaxOptions);
+                                console.log("ERROR: " + thrownError);
+                            })
+                        });
+                    });
+                    window.location.replace(window.location.origin + "/Dashboard/Tracker");
+                } else {
+                    alert("Osoba ne smije raditi više od 8 radnih sati te 4 prekovremna sata");
+                }
+            }
+
+            /*----------------------------------------------------------------------------*/
+
+          
+        </script>
+    </body>

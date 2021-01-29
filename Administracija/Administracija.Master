@@ -1,0 +1,106 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Administracija.Master.cs" Inherits="Administracija.Dash" %>
+<!DOCTYPE html>
+
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title %> - Ivan Pavić</title>
+
+    <asp:PlaceHolder runat="server">
+        <%: Scripts.Render("~/bundles/modernizr") %>
+    </asp:PlaceHolder>
+
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <link href="~/Content/bootstrap-theme.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+</head>
+<body>
+    <form runat="server">
+        <asp:ScriptManager runat="server">
+            <Scripts>
+                <%--To learn more about bundling scripts in ScriptManager see https://go.microsoft.com/fwlink/?LinkID=301884 --%>
+                <%--Framework Scripts--%>
+                <asp:ScriptReference Name="MsAjaxBundle" />
+                <asp:ScriptReference Name="jquery" />
+                <asp:ScriptReference Name="bootstrap" />
+                <asp:ScriptReference Name="WebForms.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebForms.js" />
+                <asp:ScriptReference Name="WebUIValidation.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebUIValidation.js" />
+                <asp:ScriptReference Name="MenuStandards.js" Assembly="System.Web" Path="~/Scripts/WebForms/MenuStandards.js" />
+                <asp:ScriptReference Name="GridView.js" Assembly="System.Web" Path="~/Scripts/WebForms/GridView.js" />
+                <asp:ScriptReference Name="DetailsView.js" Assembly="System.Web" Path="~/Scripts/WebForms/DetailsView.js" />
+                <asp:ScriptReference Name="TreeView.js" Assembly="System.Web" Path="~/Scripts/WebForms/TreeView.js" />
+                <asp:ScriptReference Name="WebParts.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebParts.js" />
+                <asp:ScriptReference Name="Focus.js" Assembly="System.Web" Path="~/Scripts/WebForms/Focus.js" />
+                <asp:ScriptReference Path="~/Scripts/dash.js"/>
+                <asp:ScriptReference Path="~/Scripts/table2CSV.js"/>
+                <asp:ScriptReference Name="WebFormsBundle" />
+                <%--Site Scripts--%>
+            </Scripts>
+        </asp:ScriptManager>
+
+    <div class="wrapper">
+
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <h3><%= Administracija.Models.ActiveSession.Current.ActiveUser.ToString()  %></h3>
+                <h4><%= Administracija.Models.UserRoles.State[Administracija.Models.ActiveSession.Current.ActiveUser.UserLevel] %></h4>
+            </div>
+
+            <ul class="list-unstyled components">
+                <li>
+                    <a href="Dashboard.aspx"><%= Resources.Menu.menuWorkers.ToString() %></a>
+                </li>
+                <li>
+                    <a href="TeamLeaders.aspx"><%= Resources.Menu.menuTeamLeaders.ToString() %></a>
+                </li>
+                <li>
+                    <a href="Clients.aspx"><%= Resources.Menu.menuClients.ToString() %></a>
+                </li>
+            </ul>
+
+            <ul class="list-unstyled components">
+                <li>
+                    <a href="Projects.aspx"><%= Resources.Menu.menuProjects.ToString() %></a>
+                </li>
+                <li>
+                    <a href="ClientReports.aspx"><%= Resources.Menu.menuClientReports.ToString() %></a>
+                </li>
+                <li>
+                    <a href="TeamReports.aspx"><%= Resources.Menu.menuHourReports.ToString() %></a>
+                </li>                
+                <li>
+                    <a href="Logout.aspx"><%= Resources.Menu.menuLogout.ToString() %></a>
+                </li>
+            </ul>
+
+        </nav>
+
+        <!-- CONTENT -->
+
+        <div id="content">
+              <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+
+                    <button type="button" id="sidebarCollapse" class="navbar-btn">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+
+                </div>
+            </nav>
+
+            <asp:ContentPlaceHolder ID="MainContent" runat="server">
+            </asp:ContentPlaceHolder>
+            <hr />
+            <footer>
+                <p>&copy; - Ivan Pavić</p>
+            </footer>
+          </div>
+    </div>
+
+    </form>
+</body>
+</html>

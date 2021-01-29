@@ -1,0 +1,50 @@
+﻿@model Korisnici.Models.WorkerCreateSession
+@{
+    ViewBag.Title = "Prijava";
+}
+
+@using (Html.BeginForm())
+{
+
+    <div class="text-center">
+        <div class="container">
+            <h2>Prijava za djelatnike</h2>
+        </div>
+    </div>
+
+    <div class="form-signin text-center">
+
+        @if (ViewBag.SomeMessage != "")
+        {
+            <!-- SYSTEM  // MSG -->
+            @Html.Raw(ViewBag.Message)
+            <!-- // -->
+        }
+
+        <!-- EMAIL -->
+        <div class="field-wrapper input">
+            @Html.EditorFor(model => model.Email, new { htmlAttributes = new { @class = "form-control", @placeholder = "Email" } })
+            @Html.ValidationMessageFor(model => model.Email, "", new { @class = "text-danger" })
+        </div>
+        <!-- /EMAIL -->
+        <!-- LOZINKA -->
+        <div class="field-wrapper input mb-2">
+            @Html.EditorFor(model => model.Password, new { htmlAttributes = new { @class = "form-control", @placeholder = "Unesite zaporku" } })
+            @Html.ValidationMessageFor(model => model.Password, "", new { @class = "text-danger" })
+        </div>
+        <!-- /LOZINKA -->
+
+        <div class="d-sm-flex justify-content-between">
+
+            <!-- PRIJAVA -->
+            <div class="field-wrapper">
+                <button type="submit" class="btn btn-lg btn-primary btn-block mt-2" value="">Prijava</button>
+            </div>
+            <!-- /PRIJAVA -->
+
+        </div>
+
+
+
+    </div>
+}

@@ -1,0 +1,96 @@
+﻿@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Pratitelj rada";
+}
+
+<div class="container">
+    <span id="tblWork"></span>
+</div>
+
+
+<script type="text/javascript">
+    const delim = '-';
+    let currentDate = null;
+
+    $(document).ready(function () {
+
+        let today = new Date();
+        let dd = String(today.getDate()).padStart(2, '0');
+        let mm = String(today.getMonth() + 1).padStart(2, '0');
+        let yyyy = today.getFullYear();
+        today = yyyy + delim + mm + delim + dd;
+        currentDate = dd + '.' + mm + '.' + yyyy+'.';
+
+        getData(today);
+    });
+
+    $(document).on("click", "#workerStart", function () {
+
+        $.ajax({
+            type: 'POST',
+            url: '/Dashboard/StartWorker',
+            dataType: 'text',
+            data: {
+                project: $(this).data("edit")
+            },
+            success: (function (result) {
+                location.reload();
+            }),
+            error: (function (xhr, status) {
+                alert(status);
+            })
+        })
+    });
+
+    $(document).on("click", "#workerStop", function () {
+
+        $.ajax({
+            type: 'POST',
+            url: '/Dashboard/StopWorker',
+            dataType: 'text',
+            data: {
+                project: $(this).data("edit")
+            },
+            success: (function (result) {
+                location.reload();
+            }),
+            error: (function (xhr, status) {
+                alert(status);
+            })
+        })
+    });
+
+
+    function getData(today) {
+   
+            $.ajax({
+                type: 'POST',
+                url: '/Dashboard/GetTrackerTable',
+                dataType: 'text',
+                data: {
+                    permission: @Administracija.Models.ActiveSession.Current.ActiveUser.IDWorker,
+                    date: today
+                },
+                success: (function (result) {
+                    $('#tblWork').html(result);
+                }),
+                error: (function (xhr, status) {
+                    alert(status);
+                }),
+                complete: (function (result) {
+                    $('#txtDate').val(today);
+                })
+            })
+    }
+
+    $(document).on("change", "#txtDate", function () {
+        let fullDate = $(this).val();
+        let tempDate = fullDate.split(".");
+        let today = new Date(tempDate[2] + delim + tempDate[1] + delim + tempDate[0]);
+        let dd = String(today.getDate()).padStart(2, '0');
+        let mm = String(today.getMonth() + 1).padStart(2, '0');
+        let yyyy = today.getFullYear();
+        today = yyyy + delim + mm + delim + dd;
+        getData(today);
+    });
+</script>
